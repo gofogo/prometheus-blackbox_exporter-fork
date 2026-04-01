@@ -30,7 +30,7 @@ import (
 	promconfig "github.com/prometheus/common/config"
 )
 
-func ProbeWebsocket(ctx context.Context, target string, module config.Module, registry *prometheus.Registry, logger *slog.Logger) (success bool) {
+func ProbeWebsocket(ctx context.Context, target string, module config.Module, registry prometheus.Registerer, logger *slog.Logger) (success bool) {
 
 	targetURL, err := url.Parse(target)
 	if err != nil {

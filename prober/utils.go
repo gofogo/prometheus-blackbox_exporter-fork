@@ -45,7 +45,7 @@ var (
 )
 
 // Returns the IP for the IPProtocol and lookup time.
-func chooseProtocol(ctx context.Context, IPProtocol string, fallbackIPProtocol bool, target string, registry *prometheus.Registry, logger *slog.Logger) (ip *net.IPAddr, lookupTime float64, err error) {
+func chooseProtocol(ctx context.Context, IPProtocol string, fallbackIPProtocol bool, target string, registry prometheus.Registerer, logger *slog.Logger) (ip *net.IPAddr, lookupTime float64, err error) {
 	var fallbackProtocol string
 	probeDNSLookupTimeSeconds := prometheus.NewGauge(probeDNSLookupTimeSecondsOpts)
 	probeIPProtocolGauge := prometheus.NewGauge(probeIPProtocolGaugeOpts)
