@@ -28,7 +28,7 @@ import (
 	"github.com/prometheus/blackbox_exporter/config"
 )
 
-func probeExpectInfo(registry *prometheus.Registry, qr *config.QueryResponse, bytes []byte, match []int) {
+func probeExpectInfo(registry prometheus.Registerer, qr *config.QueryResponse, bytes []byte, match []int) {
 	var names []string
 	var values []string
 	for _, s := range qr.Labels {
@@ -46,7 +46,7 @@ func probeExpectInfo(registry *prometheus.Registry, qr *config.QueryResponse, by
 	metric.WithLabelValues(values...).Set(1)
 }
 
-func probeQueryResponses(ctx context.Context, target string, conn net.Conn, module config.Module, proberName string, registry *prometheus.Registry, logger *slog.Logger) bool {
+func probeQueryResponses(ctx context.Context, target string, conn net.Conn, module config.Module, proberName string, registry prometheus.Registerer, logger *slog.Logger) bool {
 	probeSSLEarliestCertExpiry := prometheus.NewGauge(sslEarliestCertExpiryGaugeOpts)
 	probeSSLLastChainExpiryTimestampSeconds := prometheus.NewGauge(sslChainExpiryInTimeStampGaugeOpts)
 	probeSSLLastInformation := prometheus.NewGaugeVec(

@@ -22,7 +22,7 @@ import (
 	"github.com/prometheus/blackbox_exporter/config"
 )
 
-type ProbeFn func(ctx context.Context, target string, config config.Module, registry *prometheus.Registry, logger *slog.Logger) bool
+type ProbeFn func(ctx context.Context, target string, config config.Module, registry prometheus.Registerer, logger *slog.Logger) bool
 
 const (
 	helpSSLEarliestCertExpiry     = "Returns last SSL chain expiry in unixtime"

@@ -26,7 +26,7 @@ import (
 	"github.com/prometheus/blackbox_exporter/config"
 )
 
-func dialTCP(ctx context.Context, target string, module config.Module, registry *prometheus.Registry, logger *slog.Logger) (net.Conn, error) {
+func dialTCP(ctx context.Context, target string, module config.Module, registry prometheus.Registerer, logger *slog.Logger) (net.Conn, error) {
 	var dialProtocol, dialTarget string
 	dialer := &net.Dialer{}
 	targetAddress, port, err := net.SplitHostPort(target)
@@ -86,7 +86,7 @@ func dialTCP(ctx context.Context, target string, module config.Module, registry 
 	return tls.DialWithDialer(dialer, dialProtocol, dialTarget, tlsConfig)
 }
 
-func ProbeTCP(ctx context.Context, target string, module config.Module, registry *prometheus.Registry, logger *slog.Logger) bool {
+func ProbeTCP(ctx context.Context, target string, module config.Module, registry prometheus.Registerer, logger *slog.Logger) bool {
 	conn, err := dialTCP(ctx, target, module, registry, logger)
 	if err != nil {
 		logger.Error("Error dialing TCP", "err", err)

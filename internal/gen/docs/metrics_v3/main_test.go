@@ -11,25 +11,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package config
+package main
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
-	"fmt"
 	"os"
+	"testing"
 )
 
-func GenerateChecksum(yamlFilePath string) (string, error) {
-	hash := sha256.New()
-	yamlContent, err := os.ReadFile(yamlFilePath)
+// TestGenerateMatchesGoldenFile verifies that the generated metrics table
+// matches the committed metrics.md. If this test fails, a metric was
+// added, removed, or its name/type/labels/help changed — run
+// `go run ./internal/gen/docs/metrics_v3` to regenerate the file.
+func TestGenerateMatchesGoldenFile(t *testing.T) {
+	golden, err := os.ReadFile("metrics.md")
 	if err != nil {
-		return "", fmt.Errorf("error reading YAML file: %w", err)
-	}
-	_, err = hash.Write(yamlContent)
-	if err != nil {
-		return "", fmt.Errorf("error writing YAML file to hash: %w", err)
+		t.Fatalf("read golden file: %v", err)
 	}
 
-	return hex.EncodeToString(hash.Sum(nil)), nil
+	got := generate()
+
+	if got != string(golden) {
+		t.Errorf("generated output differs from metrics.md\n" +
+			"Run `go run ./internal/gen/docs/metrics_v3` to regenerate.")
+	}
 }
