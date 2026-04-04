@@ -76,14 +76,8 @@ func Handler(w http.ResponseWriter, r *http.Request, c *config.Config, logger *s
 	defer cancel()
 	r = r.WithContext(ctx)
 
-	probeSuccessGauge := prometheus.NewGauge(prometheus.GaugeOpts{
-		Name: "probe_success",
-		Help: "Displays whether or not the probe was a success",
-	})
-	probeDurationGauge := prometheus.NewGauge(prometheus.GaugeOpts{
-		Name: "probe_duration_seconds",
-		Help: "Returns how long the probe took to complete in seconds",
-	})
+	probeSuccessGauge := ProbeSuccessGaugeSpec.NewGauge()
+	probeDurationGauge := ProbeDurationGaugeSpec.NewGauge()
 
 	target := params.Get("target")
 	if target == "" {

@@ -35,39 +35,18 @@ func probeExpectInfo(registry *prometheus.Registry, qr *config.QueryResponse, by
 		names = append(names, s.Name)
 		values = append(values, string(qr.Expect.Expand(nil, []byte(s.Value), bytes, match)))
 	}
-	metric := prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Name: "probe_expect_info",
-			Help: "Explicit content matched",
-		},
-		names,
-	)
+	metric := prometheus.NewGaugeVec(ProbeExpectInfoSpec.Opts, names)
 	registry.MustRegister(metric)
 	metric.WithLabelValues(values...).Set(1)
 }
 
 func probeQueryResponses(ctx context.Context, target string, conn net.Conn, module config.Module, proberName string, registry *prometheus.Registry, logger *slog.Logger) bool {
-	probeSSLEarliestCertExpiry := prometheus.NewGauge(sslEarliestCertExpiryGaugeOpts)
-	probeSSLLastChainExpiryTimestampSeconds := prometheus.NewGauge(sslChainExpiryInTimeStampGaugeOpts)
-	probeSSLLastInformation := prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Name: "probe_ssl_last_chain_info",
-			Help: "Contains SSL leaf certificate information",
-		},
-		[]string{"fingerprint_sha256", "subject", "issuer", "subjectalternative", "serialnumber"},
-	)
-	probeTLSVersion := prometheus.NewGaugeVec(
-		probeTLSInfoGaugeOpts,
-		[]string{"version"},
-	)
-	probeFailedDueToRegex := prometheus.NewGauge(prometheus.GaugeOpts{
-		Name: "probe_failed_due_to_regex",
-		Help: "Indicates if probe failed due to regex",
-	})
-	probeFailedDueToBytes := prometheus.NewGauge(prometheus.GaugeOpts{
-		Name: "probe_failed_due_to_bytes",
-		Help: "Indicates if probe failed due to bytes",
-	})
+	probeSSLEarliestCertExpiry := SSLEarliestCertExpiryGaugeSpec.NewGauge()
+	probeSSLLastChainExpiryTimestampSeconds := SSLChainExpiryInTimeStampGaugeSpec.NewGauge()
+	probeSSLLastInformation := ProbeSSLLastChainInfoSpec.NewGaugeVec()
+	probeTLSVersion := ProbeTLSInfoGaugeSpec.NewGaugeVec()
+	probeFailedDueToRegex := ProbeFailedDueToRegexSpec.NewGauge()
+	probeFailedDueToBytes := ProbeFailedDueToBytesSpec.NewGauge()
 	registry.MustRegister(probeFailedDueToRegex)
 	registry.MustRegister(probeFailedDueToBytes)
 

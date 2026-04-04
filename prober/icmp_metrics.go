@@ -1,4 +1,4 @@
-// Copyright 2016 The Prometheus Authors
+// Copyright 2025 The Prometheus Authors
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -13,14 +13,16 @@
 
 package prober
 
-import (
-	"context"
-	"log/slog"
+import "github.com/prometheus/client_golang/prometheus"
 
-	"github.com/prometheus/client_golang/prometheus"
-
-	"github.com/prometheus/blackbox_exporter/config"
+var (
+	ProbeICMPDurationGaugeVecSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_icmp_duration_seconds", Help: "Duration of icmp request by phase"},
+		Labels: []string{"phase"},
+		Prober: "icmp",
+	}
+	ProbeICMPReplyHopLimitSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_icmp_reply_hop_limit", Help: "Replied packet hop limit (TTL for ipv4)"},
+		Prober: "icmp",
+	}
 )
-
-type ProbeFn func(ctx context.Context, target string, config config.Module, registry *prometheus.Registry, logger *slog.Logger) bool
-

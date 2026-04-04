@@ -80,40 +80,19 @@ func (c *gRPCHealthCheckClient) Check(ctx context.Context, service string, md me
 func ProbeGRPC(ctx context.Context, target string, module config.Module, registry *prometheus.Registry, logger *slog.Logger) (success bool) {
 
 	var (
-		durationGaugeVec = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Name: "probe_grpc_duration_seconds",
-			Help: "Duration of gRPC request by phase",
-		}, []string{"phase"})
+		durationGaugeVec = ProbeGRPCDurationGaugeVecSpec.NewGaugeVec()
 
-		isSSLGauge = prometheus.NewGauge(prometheus.GaugeOpts{
-			Name: "probe_grpc_ssl",
-			Help: "Indicates if SSL was used for the connection",
-		})
+		isSSLGauge = ProbeGRPCSSLSpec.NewGauge()
 
-		statusCodeGauge = prometheus.NewGauge(prometheus.GaugeOpts{
-			Name: "probe_grpc_status_code",
-			Help: "Response gRPC status code",
-		})
+		statusCodeGauge = ProbeGRPCStatusCodeSpec.NewGauge()
 
-		healthCheckResponseGaugeVec = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Name: "probe_grpc_healthcheck_response",
-			Help: "Response HealthCheck response",
-		}, []string{"serving_status"})
+		healthCheckResponseGaugeVec = ProbeGRPCHealthCheckResponseSpec.NewGaugeVec()
 
-		probeSSLEarliestCertExpiryGauge = prometheus.NewGauge(sslEarliestCertExpiryGaugeOpts)
+		probeSSLEarliestCertExpiryGauge = SSLEarliestCertExpiryGaugeSpec.NewGauge()
 
-		probeTLSVersion = prometheus.NewGaugeVec(
-			probeTLSInfoGaugeOpts,
-			[]string{"version"},
-		)
+		probeTLSVersion = ProbeTLSInfoGaugeSpec.NewGaugeVec()
 
-		probeSSLLastInformation = prometheus.NewGaugeVec(
-			prometheus.GaugeOpts{
-				Name: "probe_ssl_last_chain_info",
-				Help: "Contains SSL leaf certificate information",
-			},
-			[]string{"fingerprint_sha256", "subject", "issuer", "subjectalternative", "serialnumber"},
-		)
+		probeSSLLastInformation = ProbeSSLLastChainInfoSpec.NewGaugeVec()
 	)
 
 	for _, lv := range []string{"resolve"} {

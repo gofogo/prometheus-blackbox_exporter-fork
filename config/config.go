@@ -102,18 +102,22 @@ type SafeConfig struct {
 	configChecksum      string
 }
 
-func NewSafeConfig(reg prometheus.Registerer) *SafeConfig {
-	configReloadSuccess := promauto.With(reg).NewGauge(prometheus.GaugeOpts{
+var (
+	ConfigReloadSuccessOpts = prometheus.GaugeOpts{
 		Namespace: "blackbox_exporter",
 		Name:      "config_last_reload_successful",
 		Help:      "Blackbox exporter config loaded successfully.",
-	})
-
-	configReloadSeconds := promauto.With(reg).NewGauge(prometheus.GaugeOpts{
+	}
+	ConfigReloadSuccessTimestampOpts = prometheus.GaugeOpts{
 		Namespace: "blackbox_exporter",
 		Name:      "config_last_reload_success_timestamp_seconds",
 		Help:      "Timestamp of the last successful configuration reload.",
-	})
+	}
+)
+
+func NewSafeConfig(reg prometheus.Registerer) *SafeConfig {
+	configReloadSuccess := promauto.With(reg).NewGauge(ConfigReloadSuccessOpts)
+	configReloadSeconds := promauto.With(reg).NewGauge(ConfigReloadSuccessTimestampOpts)
 	return &SafeConfig{C: &Config{}, configReloadSuccess: configReloadSuccess, configReloadSeconds: configReloadSeconds}
 }
 

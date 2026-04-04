@@ -1,4 +1,4 @@
-// Copyright 2016 The Prometheus Authors
+// Copyright 2025 The Prometheus Authors
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -13,14 +13,15 @@
 
 package prober
 
-import (
-	"context"
-	"log/slog"
+import "github.com/prometheus/client_golang/prometheus"
 
-	"github.com/prometheus/client_golang/prometheus"
-
-	"github.com/prometheus/blackbox_exporter/config"
+var (
+	ProbeSuccessGaugeSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_success", Help: "Displays whether or not the probe was a success"},
+		Prober: "all",
+	}
+	ProbeDurationGaugeSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_duration_seconds", Help: "Returns how long the probe took to complete in seconds"},
+		Prober: "all",
+	}
 )
-
-type ProbeFn func(ctx context.Context, target string, config config.Module, registry *prometheus.Registry, logger *slog.Logger) bool
-
