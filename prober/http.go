@@ -297,74 +297,21 @@ var userAgentDefaultHeader = fmt.Sprintf("Blackbox-Exporter/%s", version.Version
 func ProbeHTTP(ctx context.Context, target string, module config.Module, registry *prometheus.Registry, logger *slog.Logger) (success bool) {
 	var redirects int
 	var (
-		durationGaugeVec = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Name: "probe_http_duration_seconds",
-			Help: "Duration of http request by phase, summed over all redirects",
-		}, []string{"phase"})
-		contentLengthGauge = prometheus.NewGauge(prometheus.GaugeOpts{
-			Name: "probe_http_content_length",
-			Help: "Length of http content response",
-		})
-		bodyUncompressedLengthGauge = prometheus.NewGauge(prometheus.GaugeOpts{
-			Name: "probe_http_uncompressed_body_length",
-			Help: "Length of uncompressed response body",
-		})
-		redirectsGauge = prometheus.NewGauge(prometheus.GaugeOpts{
-			Name: "probe_http_redirects",
-			Help: "The number of redirects",
-		})
-
-		isSSLGauge = prometheus.NewGauge(prometheus.GaugeOpts{
-			Name: "probe_http_ssl",
-			Help: "Indicates if SSL was used for the final redirect",
-		})
-
-		statusCodeGauge = prometheus.NewGauge(prometheus.GaugeOpts{
-			Name: "probe_http_status_code",
-			Help: "Response HTTP status code",
-		})
-
-		probeSSLEarliestCertExpiryGauge = prometheus.NewGauge(sslEarliestCertExpiryGaugeOpts)
-
-		probeSSLLastChainExpiryTimestampSeconds = prometheus.NewGauge(sslChainExpiryInTimeStampGaugeOpts)
-
-		probeSSLLastInformation = prometheus.NewGaugeVec(
-			prometheus.GaugeOpts{
-				Name: "probe_ssl_last_chain_info",
-				Help: "Contains SSL leaf certificate information",
-			},
-			[]string{"fingerprint_sha256", "subject", "issuer", "subjectalternative", "serialnumber"},
-		)
-
-		probeTLSVersion = prometheus.NewGaugeVec(
-			probeTLSInfoGaugeOpts,
-			[]string{"version"},
-		)
-
-		probeTLSCipher = prometheus.NewGaugeVec(
-			probeTLSCipherGaugeOpts,
-			[]string{"cipher"},
-		)
-
-		probeHTTPVersionGauge = prometheus.NewGauge(prometheus.GaugeOpts{
-			Name: "probe_http_version",
-			Help: "Returns the version of HTTP of the probe response",
-		})
-
-		probeFailedDueToRegex = prometheus.NewGauge(prometheus.GaugeOpts{
-			Name: "probe_failed_due_to_regex",
-			Help: "Indicates if probe failed due to regex",
-		})
-
-		probeFailedDueToCEL = prometheus.NewGauge(prometheus.GaugeOpts{
-			Name: "probe_failed_due_to_cel",
-			Help: "Indicates if probe failed due to CEL expression not matching",
-		})
-
-		probeHTTPLastModified = prometheus.NewGauge(prometheus.GaugeOpts{
-			Name: "probe_http_last_modified_timestamp_seconds",
-			Help: "Returns the Last-Modified HTTP response header in unixtime",
-		})
+		durationGaugeVec = prometheus.NewGaugeVec(probeHTTPDurationGaugeVecOpts, []string{"phase"})
+		contentLengthGauge                      = prometheus.NewGauge(probeHTTPContentLengthOpts)
+		bodyUncompressedLengthGauge             = prometheus.NewGauge(probeHTTPUncompressedBodyLengthOpts)
+		redirectsGauge                          = prometheus.NewGauge(probeHTTPRedirectsOpts)
+		isSSLGauge                              = prometheus.NewGauge(probeHTTPSSLOpts)
+		statusCodeGauge                         = prometheus.NewGauge(probeHTTPStatusCodeOpts)
+		probeSSLEarliestCertExpiryGauge         = prometheus.NewGauge(sslEarliestCertExpiryGaugeOpts)
+		probeSSLLastChainExpiryTimestampSeconds  = prometheus.NewGauge(sslChainExpiryInTimeStampGaugeOpts)
+		probeSSLLastInformation                 = prometheus.NewGaugeVec(probeSSLLastChainInfoOpts, []string{"fingerprint_sha256", "subject", "issuer", "subjectalternative", "serialnumber"})
+		probeTLSVersion                         = prometheus.NewGaugeVec(probeTLSInfoGaugeOpts, []string{"version"})
+		probeTLSCipher                          = prometheus.NewGaugeVec(probeTLSCipherGaugeOpts, []string{"cipher"})
+		probeHTTPVersionGauge                   = prometheus.NewGauge(probeHTTPVersionOpts)
+		probeFailedDueToRegex                   = prometheus.NewGauge(probeFailedDueToRegexOpts)
+		probeFailedDueToCEL                     = prometheus.NewGauge(probeFailedDueToCELOpts)
+		probeHTTPLastModified                   = prometheus.NewGauge(probeHTTPLastModifiedOpts)
 	)
 
 	registry.MustRegister(durationGaugeVec)
