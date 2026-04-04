@@ -16,48 +16,21 @@ package prober
 import "github.com/prometheus/client_golang/prometheus"
 
 var (
-	probeWebsocketStatusCodeOpts = prometheus.GaugeOpts{
-		Name: "probe_websocket_status_code",
-		Help: "Response HTTP status code",
+	ProbeWebsocketStatusCodeSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_websocket_status_code", Help: "Response HTTP status code"},
+		Prober: "websocket",
 	}
-	probeWebsocketConnectionUpgradedOpts = prometheus.GaugeOpts{
-		Name: "probe_websocket_connection_upgraded",
-		Help: "Indicates if the websocket connection was successfully upgraded",
+	ProbeWebsocketConnectionUpgradedSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_websocket_connection_upgraded", Help: "Indicates if the websocket connection was successfully upgraded"},
+		Prober: "websocket",
 	}
-	probeWebsocketFailedDueToRegexOpts = prometheus.GaugeOpts{
-		Name: "probe_websocket_failed_due_to_regex",
-		Help: "Indicates if probe failed due to regex",
+	ProbeWebsocketFailedDueToRegexSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_websocket_failed_due_to_regex", Help: "Indicates if probe failed due to regex"},
+		Prober: "websocket",
 	}
-	probeWebsocketDurationGaugeVecOpts = prometheus.GaugeOpts{
-		Name: "probe_websocket_duration_seconds",
-		Help: "Duration of websocket request by phase",
+	ProbeWebsocketDurationGaugeVecSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_websocket_duration_seconds", Help: "Duration of websocket request by phase"},
+		Labels: []string{"phase"},
+		Prober: "websocket",
 	}
 )
-
-func init() {
-	registerMetricDef(MetricDef{
-		Name:   probeWebsocketStatusCodeOpts.Name,
-		Type:   "gauge",
-		Prober: "websocket",
-		Help:   probeWebsocketStatusCodeOpts.Help,
-	})
-	registerMetricDef(MetricDef{
-		Name:   probeWebsocketConnectionUpgradedOpts.Name,
-		Type:   "gauge",
-		Prober: "websocket",
-		Help:   probeWebsocketConnectionUpgradedOpts.Help,
-	})
-	registerMetricDef(MetricDef{
-		Name:   probeWebsocketFailedDueToRegexOpts.Name,
-		Type:   "gauge",
-		Prober: "websocket",
-		Help:   probeWebsocketFailedDueToRegexOpts.Help,
-	})
-	registerMetricDef(MetricDef{
-		Name:   probeWebsocketDurationGaugeVecOpts.Name,
-		Type:   "gaugevec",
-		Prober: "websocket",
-		Labels: []string{"phase"},
-		Help:   probeWebsocketDurationGaugeVecOpts.Help,
-	})
-}

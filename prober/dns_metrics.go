@@ -16,70 +16,29 @@ package prober
 import "github.com/prometheus/client_golang/prometheus"
 
 var (
-	probeDNSDurationGaugeVecOpts = prometheus.GaugeOpts{
-		Name: "probe_dns_duration_seconds",
-		Help: "Duration of DNS request by phase",
+	ProbeDNSDurationGaugeVecSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_dns_duration_seconds", Help: "Duration of DNS request by phase"},
+		Labels: []string{"phase"},
+		Prober: "dns",
 	}
-	probeDNSAnswerRRSOpts = prometheus.GaugeOpts{
-		Name: "probe_dns_answer_rrs",
-		Help: "Returns number of entries in the answer resource record list",
+	ProbeDNSAnswerRRSSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_dns_answer_rrs", Help: "Returns number of entries in the answer resource record list"},
+		Prober: "dns",
 	}
-	probeDNSAuthorityRRSOpts = prometheus.GaugeOpts{
-		Name: "probe_dns_authority_rrs",
-		Help: "Returns number of entries in the authority resource record list",
+	ProbeDNSAuthorityRRSSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_dns_authority_rrs", Help: "Returns number of entries in the authority resource record list"},
+		Prober: "dns",
 	}
-	probeDNSAdditionalRRSOpts = prometheus.GaugeOpts{
-		Name: "probe_dns_additional_rrs",
-		Help: "Returns number of entries in the additional resource record list",
+	ProbeDNSAdditionalRRSSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_dns_additional_rrs", Help: "Returns number of entries in the additional resource record list"},
+		Prober: "dns",
 	}
-	probeDNSQuerySucceededOpts = prometheus.GaugeOpts{
-		Name: "probe_dns_query_succeeded",
-		Help: "Displays whether or not the query was executed successfully",
+	ProbeDNSQuerySucceededSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_dns_query_succeeded", Help: "Displays whether or not the query was executed successfully"},
+		Prober: "dns",
 	}
-	probeDNSSerialOpts = prometheus.GaugeOpts{
-		Name: "probe_dns_serial",
-		Help: "Returns the serial number of the zone",
+	ProbeDNSSerialSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_dns_serial", Help: "Returns the serial number of the zone"},
+		Prober: "dns",
 	}
 )
-
-func init() {
-	registerMetricDef(MetricDef{
-		Name:   probeDNSDurationGaugeVecOpts.Name,
-		Type:   "gaugevec",
-		Prober: "dns",
-		Labels: []string{"phase"},
-		Help:   probeDNSDurationGaugeVecOpts.Help,
-	})
-	registerMetricDef(MetricDef{
-		Name:   probeDNSAnswerRRSOpts.Name,
-		Type:   "gauge",
-		Prober: "dns",
-		Help:   probeDNSAnswerRRSOpts.Help,
-	})
-	registerMetricDef(MetricDef{
-		Name:   probeDNSAuthorityRRSOpts.Name,
-		Type:   "gauge",
-		Prober: "dns",
-		Help:   probeDNSAuthorityRRSOpts.Help,
-	})
-	registerMetricDef(MetricDef{
-		Name:   probeDNSAdditionalRRSOpts.Name,
-		Type:   "gauge",
-		Prober: "dns",
-		Help:   probeDNSAdditionalRRSOpts.Help,
-	})
-	registerMetricDef(MetricDef{
-		Name:   probeDNSQuerySucceededOpts.Name,
-		Type:   "gauge",
-		Prober: "dns",
-		Help:   probeDNSQuerySucceededOpts.Help,
-	})
-	// probe_dns_serial is only registered when the query type is SOA and a
-	// successful response is received.
-	registerMetricDef(MetricDef{
-		Name:   probeDNSSerialOpts.Name,
-		Type:   "gauge",
-		Prober: "dns",
-		Help:   probeDNSSerialOpts.Help,
-	})
-}

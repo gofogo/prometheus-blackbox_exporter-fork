@@ -66,9 +66,9 @@ func ProbeICMP(ctx context.Context, target string, module config.Module, registr
 		v4RawConn       *ipv4.RawConn
 		hopLimitFlagSet = true
 
-		durationGaugeVec = prometheus.NewGaugeVec(probeICMPDurationGaugeVecOpts, []string{"phase"})
+		durationGaugeVec = ProbeICMPDurationGaugeVecSpec.NewGaugeVec()
 
-		hopLimitGauge = prometheus.NewGauge(probeICMPReplyHopLimitOpts)
+		hopLimitGauge = ProbeICMPReplyHopLimitSpec.NewGauge()
 	)
 
 	for _, lv := range []string{"resolve", "setup", "rtt"} {

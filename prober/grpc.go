@@ -80,22 +80,19 @@ func (c *gRPCHealthCheckClient) Check(ctx context.Context, service string, md me
 func ProbeGRPC(ctx context.Context, target string, module config.Module, registry *prometheus.Registry, logger *slog.Logger) (success bool) {
 
 	var (
-		durationGaugeVec = prometheus.NewGaugeVec(probeGRPCDurationGaugeVecOpts, []string{"phase"})
+		durationGaugeVec = ProbeGRPCDurationGaugeVecSpec.NewGaugeVec()
 
-		isSSLGauge = prometheus.NewGauge(probeGRPCSSLOpts)
+		isSSLGauge = ProbeGRPCSSLSpec.NewGauge()
 
-		statusCodeGauge = prometheus.NewGauge(probeGRPCStatusCodeOpts)
+		statusCodeGauge = ProbeGRPCStatusCodeSpec.NewGauge()
 
-		healthCheckResponseGaugeVec = prometheus.NewGaugeVec(probeGRPCHealthCheckResponseOpts, []string{"serving_status"})
+		healthCheckResponseGaugeVec = ProbeGRPCHealthCheckResponseSpec.NewGaugeVec()
 
-		probeSSLEarliestCertExpiryGauge = prometheus.NewGauge(sslEarliestCertExpiryGaugeOpts)
+		probeSSLEarliestCertExpiryGauge = SSLEarliestCertExpiryGaugeSpec.NewGauge()
 
-		probeTLSVersion = prometheus.NewGaugeVec(probeTLSInfoGaugeOpts, []string{"version"})
+		probeTLSVersion = ProbeTLSInfoGaugeSpec.NewGaugeVec()
 
-		probeSSLLastInformation = prometheus.NewGaugeVec(
-			probeSSLLastChainInfoOpts,
-			[]string{"fingerprint_sha256", "subject", "issuer", "subjectalternative", "serialnumber"},
-		)
+		probeSSLLastInformation = ProbeSSLLastChainInfoSpec.NewGaugeVec()
 	)
 
 	for _, lv := range []string{"resolve"} {

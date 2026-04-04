@@ -11,9 +11,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// main generates docs/monitoring/metrics.md from prober.MetricRegistry.
+// main generates docs/monitoring/metrics.md from prober.AllSpecs.
 // No network calls, no dummy probes — all metadata is sourced from the
-// *_metrics.go files in the prober package.
+// MetricSpec vars defined in prober/*_metrics.go.
 //
 // Run via: go run ./internal/gen/docs/metrics
 // Or via:  make generate-metrics-documentation
@@ -25,12 +25,22 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/prometheus/blackbox_exporter/config"
 	"github.com/prometheus/blackbox_exporter/internal/gen/docs/render"
 	"github.com/prometheus/blackbox_exporter/prober"
 )
 
 //go:embed templates
 var templateFS embed.FS
+
+// metricRow is the flat view used by the template.
+type metricRow struct {
+	Name   string
+	Type   string
+	Prober string
+	Labels []string
+	Help   string
+}
 
 // ColWidths holds computed column widths for the markdown table.
 type ColWidths struct {
@@ -43,37 +53,67 @@ type ColWidths struct {
 
 // TemplateData is passed to the template engine.
 type TemplateData struct {
-	Metrics   []prober.MetricDef
+	Metrics   []metricRow
 	ColWidths ColWidths
 }
 
-func sortMetrics(m []prober.MetricDef) {
-	sort.Slice(m, func(i, j int) bool {
-		if m[i].Prober != m[j].Prober {
-			return m[i].Prober < m[j].Prober
+func buildRows() []metricRow {
+	// Config / exporter-level metrics (config package can't use MetricSpec
+	// due to import cycles, so we handle them inline here).
+	rows := []metricRow{
+		{
+			Name:   config.ConfigReloadSuccessOpts.Namespace + "_" + config.ConfigReloadSuccessOpts.Name,
+			Type:   "gauge",
+			Prober: "-",
+			Help:   config.ConfigReloadSuccessOpts.Help,
+		},
+		{
+			Name:   config.ConfigReloadSuccessTimestampOpts.Namespace + "_" + config.ConfigReloadSuccessTimestampOpts.Name,
+			Type:   "gauge",
+			Prober: "-",
+			Help:   config.ConfigReloadSuccessTimestampOpts.Help,
+		},
+	}
+
+	// All prober metrics from the single source of truth.
+	for _, s := range prober.AllSpecs {
+		rows = append(rows, metricRow{
+			Name:   s.Opts.Name,
+			Type:   s.Type(),
+			Prober: s.Prober,
+			Labels: s.Labels,
+			Help:   s.Opts.Help,
+		})
+	}
+	return rows
+}
+
+func sortRows(rows []metricRow) {
+	sort.Slice(rows, func(i, j int) bool {
+		if rows[i].Prober != rows[j].Prober {
+			return rows[i].Prober < rows[j].Prober
 		}
-		return m[i].Name < m[j].Name
+		return rows[i].Name < rows[j].Name
 	})
 }
 
-func computeColWidths(m []prober.MetricDef) ColWidths {
+func computeColWidths(rows []metricRow) ColWidths {
 	return ColWidths{
-		Name:   render.MapColumn("Name", m, func(x prober.MetricDef) string { return x.Name }),
-		Type:   render.MapColumn("Metric Type", m, func(x prober.MetricDef) string { return x.Type }),
-		Prober: render.MapColumn("Prober", m, func(x prober.MetricDef) string { return x.Prober }),
-		Labels: render.MapColumn("Labels", m, func(x prober.MetricDef) string { return strings.Join(x.Labels, ", ") }),
-		Help:   render.MapColumn("Help", m, func(x prober.MetricDef) string { return x.Help }),
+		Name:   render.MapColumn("Name", rows, func(r metricRow) string { return r.Name }),
+		Type:   render.MapColumn("Metric Type", rows, func(r metricRow) string { return r.Type }),
+		Prober: render.MapColumn("Prober", rows, func(r metricRow) string { return r.Prober }),
+		Labels: render.MapColumn("Labels", rows, func(r metricRow) string { return strings.Join(r.Labels, ", ") }),
+		Help:   render.MapColumn("Help", rows, func(r metricRow) string { return r.Help }),
 	}
 }
 
 func main() {
-	metrics := make([]prober.MetricDef, len(prober.MetricRegistry))
-	copy(metrics, prober.MetricRegistry)
-	sortMetrics(metrics)
+	rows := buildRows()
+	sortRows(rows)
 
 	data := TemplateData{
-		Metrics:   metrics,
-		ColWidths: computeColWidths(metrics),
+		Metrics:   rows,
+		ColWidths: computeColWidths(rows),
 	}
 
 	content, err := render.RenderTemplate(templateFS, "metrics.gotpl", data)
@@ -86,5 +126,5 @@ func main() {
 		log.Fatalf("write %s: %v", outputPath, err)
 	}
 
-	log.Printf("wrote %s (%d metrics)", outputPath, len(metrics))
+	log.Printf("wrote %s (%d metrics)", outputPath, len(rows))
 }

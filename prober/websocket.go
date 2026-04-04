@@ -40,10 +40,10 @@ func ProbeWebsocket(ctx context.Context, target string, module config.Module, re
 
 	logger.Debug("probing websocket", "target", targetURL.String())
 
-	httpStatusCode := prometheus.NewGauge(probeWebsocketStatusCodeOpts)
-	isConnected := prometheus.NewGauge(probeWebsocketConnectionUpgradedOpts)
-	probeFailedDueToRegex := prometheus.NewGauge(probeWebsocketFailedDueToRegexOpts)
-	durationGaugeVec := prometheus.NewGaugeVec(probeWebsocketDurationGaugeVecOpts, []string{"phase"})
+	httpStatusCode := ProbeWebsocketStatusCodeSpec.NewGauge()
+	isConnected := ProbeWebsocketConnectionUpgradedSpec.NewGauge()
+	probeFailedDueToRegex := ProbeWebsocketFailedDueToRegexSpec.NewGauge()
+	durationGaugeVec := ProbeWebsocketDurationGaugeVecSpec.NewGaugeVec()
 
 	registry.MustRegister(isConnected)
 	registry.MustRegister(httpStatusCode)

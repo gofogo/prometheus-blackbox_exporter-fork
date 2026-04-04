@@ -32,9 +32,9 @@ var protocolToGauge = map[string]float64{
 // Returns the IP for the IPProtocol and lookup time.
 func chooseProtocol(ctx context.Context, IPProtocol string, fallbackIPProtocol bool, target string, registry *prometheus.Registry, logger *slog.Logger) (ip *net.IPAddr, lookupTime float64, err error) {
 	var fallbackProtocol string
-	probeDNSLookupTimeSeconds := prometheus.NewGauge(probeDNSLookupTimeSecondsOpts)
-	probeIPProtocolGauge := prometheus.NewGauge(probeIPProtocolGaugeOpts)
-	probeIPAddrHash := prometheus.NewGauge(probeIPAddrHashOpts)
+	probeDNSLookupTimeSeconds := ProbeDNSLookupTimeSecondsSpec.NewGauge()
+	probeIPProtocolGauge := ProbeIPProtocolGaugeSpec.NewGauge()
+	probeIPAddrHash := ProbeIPAddrHashSpec.NewGauge()
 	registry.MustRegister(probeIPProtocolGauge)
 	registry.MustRegister(probeDNSLookupTimeSeconds)
 	registry.MustRegister(probeIPAddrHash)

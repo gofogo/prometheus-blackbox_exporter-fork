@@ -16,27 +16,12 @@ package prober
 import "github.com/prometheus/client_golang/prometheus"
 
 var (
-	probeSuccessGaugeOpts = prometheus.GaugeOpts{
-		Name: "probe_success",
-		Help: "Displays whether or not the probe was a success",
+	ProbeSuccessGaugeSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_success", Help: "Displays whether or not the probe was a success"},
+		Prober: "all",
 	}
-	probeDurationGaugeOpts = prometheus.GaugeOpts{
-		Name: "probe_duration_seconds",
-		Help: "Returns how long the probe took to complete in seconds",
+	ProbeDurationGaugeSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_duration_seconds", Help: "Returns how long the probe took to complete in seconds"},
+		Prober: "all",
 	}
 )
-
-func init() {
-	registerMetricDef(MetricDef{
-		Name:   probeSuccessGaugeOpts.Name,
-		Type:   "gauge",
-		Prober: "all",
-		Help:   probeSuccessGaugeOpts.Help,
-	})
-	registerMetricDef(MetricDef{
-		Name:   probeDurationGaugeOpts.Name,
-		Type:   "gauge",
-		Prober: "all",
-		Help:   probeDurationGaugeOpts.Help,
-	})
-}

@@ -125,11 +125,11 @@ func validRcode(rcode int, valid []string, logger *slog.Logger) bool {
 
 func ProbeDNS(ctx context.Context, target string, module config.Module, registry *prometheus.Registry, logger *slog.Logger) bool {
 	var dialProtocol string
-	probeDNSDurationGaugeVec := prometheus.NewGaugeVec(probeDNSDurationGaugeVecOpts, []string{"phase"})
-	probeDNSAnswerRRSGauge := prometheus.NewGauge(probeDNSAnswerRRSOpts)
-	probeDNSAuthorityRRSGauge := prometheus.NewGauge(probeDNSAuthorityRRSOpts)
-	probeDNSAdditionalRRSGauge := prometheus.NewGauge(probeDNSAdditionalRRSOpts)
-	probeDNSQuerySucceeded := prometheus.NewGauge(probeDNSQuerySucceededOpts)
+	probeDNSDurationGaugeVec := ProbeDNSDurationGaugeVecSpec.NewGaugeVec()
+	probeDNSAnswerRRSGauge := ProbeDNSAnswerRRSSpec.NewGauge()
+	probeDNSAuthorityRRSGauge := ProbeDNSAuthorityRRSSpec.NewGauge()
+	probeDNSAdditionalRRSGauge := ProbeDNSAdditionalRRSSpec.NewGauge()
+	probeDNSQuerySucceeded := ProbeDNSQuerySucceededSpec.NewGauge()
 
 	for _, lv := range []string{"resolve", "connect", "request"} {
 		probeDNSDurationGaugeVec.WithLabelValues(lv)
@@ -266,7 +266,7 @@ func ProbeDNS(ctx context.Context, target string, module config.Module, registry
 	probeDNSQuerySucceeded.Set(1)
 
 	if qt == dns.TypeSOA {
-		probeDNSSOAGauge = prometheus.NewGauge(probeDNSSerialOpts)
+		probeDNSSOAGauge = ProbeDNSSerialSpec.NewGauge()
 		registry.MustRegister(probeDNSSOAGauge)
 
 		for _, a := range response.Answer {

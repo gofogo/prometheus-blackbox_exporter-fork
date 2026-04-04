@@ -16,29 +16,13 @@ package prober
 import "github.com/prometheus/client_golang/prometheus"
 
 var (
-	probeICMPDurationGaugeVecOpts = prometheus.GaugeOpts{
-		Name: "probe_icmp_duration_seconds",
-		Help: "Duration of icmp request by phase",
+	ProbeICMPDurationGaugeVecSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_icmp_duration_seconds", Help: "Duration of icmp request by phase"},
+		Labels: []string{"phase"},
+		Prober: "icmp",
 	}
-	probeICMPReplyHopLimitOpts = prometheus.GaugeOpts{
-		Name: "probe_icmp_reply_hop_limit",
-		Help: "Replied packet hop limit (TTL for ipv4)",
+	ProbeICMPReplyHopLimitSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_icmp_reply_hop_limit", Help: "Replied packet hop limit (TTL for ipv4)"},
+		Prober: "icmp",
 	}
 )
-
-func init() {
-	registerMetricDef(MetricDef{
-		Name:   probeICMPDurationGaugeVecOpts.Name,
-		Type:   "gaugevec",
-		Prober: "icmp",
-		Labels: []string{"phase"},
-		Help:   probeICMPDurationGaugeVecOpts.Help,
-	})
-	// probe_icmp_reply_hop_limit is only registered when an ICMP reply is received.
-	registerMetricDef(MetricDef{
-		Name:   probeICMPReplyHopLimitOpts.Name,
-		Type:   "gauge",
-		Prober: "icmp",
-		Help:   probeICMPReplyHopLimitOpts.Help,
-	})
-}

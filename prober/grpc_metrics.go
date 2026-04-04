@@ -16,49 +16,22 @@ package prober
 import "github.com/prometheus/client_golang/prometheus"
 
 var (
-	probeGRPCDurationGaugeVecOpts = prometheus.GaugeOpts{
-		Name: "probe_grpc_duration_seconds",
-		Help: "Duration of gRPC request by phase",
+	ProbeGRPCDurationGaugeVecSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_grpc_duration_seconds", Help: "Duration of gRPC request by phase"},
+		Labels: []string{"phase"},
+		Prober: "grpc",
 	}
-	probeGRPCSSLOpts = prometheus.GaugeOpts{
-		Name: "probe_grpc_ssl",
-		Help: "Indicates if SSL was used for the connection",
+	ProbeGRPCSSLSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_grpc_ssl", Help: "Indicates if SSL was used for the connection"},
+		Prober: "grpc",
 	}
-	probeGRPCStatusCodeOpts = prometheus.GaugeOpts{
-		Name: "probe_grpc_status_code",
-		Help: "Response gRPC status code",
+	ProbeGRPCStatusCodeSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_grpc_status_code", Help: "Response gRPC status code"},
+		Prober: "grpc",
 	}
-	probeGRPCHealthCheckResponseOpts = prometheus.GaugeOpts{
-		Name: "probe_grpc_healthcheck_response",
-		Help: "Response HealthCheck response",
+	ProbeGRPCHealthCheckResponseSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_grpc_healthcheck_response", Help: "Response HealthCheck response"},
+		Labels: []string{"serving_status"},
+		Prober: "grpc",
 	}
 )
-
-func init() {
-	registerMetricDef(MetricDef{
-		Name:   probeGRPCDurationGaugeVecOpts.Name,
-		Type:   "gaugevec",
-		Prober: "grpc",
-		Labels: []string{"phase"},
-		Help:   probeGRPCDurationGaugeVecOpts.Help,
-	})
-	registerMetricDef(MetricDef{
-		Name:   probeGRPCSSLOpts.Name,
-		Type:   "gauge",
-		Prober: "grpc",
-		Help:   probeGRPCSSLOpts.Help,
-	})
-	registerMetricDef(MetricDef{
-		Name:   probeGRPCStatusCodeOpts.Name,
-		Type:   "gauge",
-		Prober: "grpc",
-		Help:   probeGRPCStatusCodeOpts.Help,
-	})
-	registerMetricDef(MetricDef{
-		Name:   probeGRPCHealthCheckResponseOpts.Name,
-		Type:   "gaugevec",
-		Prober: "grpc",
-		Labels: []string{"serving_status"},
-		Help:   probeGRPCHealthCheckResponseOpts.Help,
-	})
-}

@@ -16,37 +16,16 @@ package prober
 import "github.com/prometheus/client_golang/prometheus"
 
 var (
-	probeDNSLookupTimeSecondsOpts = prometheus.GaugeOpts{
-		Name: "probe_dns_lookup_time_seconds",
-		Help: "Returns the time taken for probe dns lookup in seconds",
+	ProbeDNSLookupTimeSecondsSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_dns_lookup_time_seconds", Help: "Returns the time taken for probe dns lookup in seconds"},
+		Prober: "dns, grpc, http, icmp, tcp, unix, websocket",
 	}
-	probeIPProtocolGaugeOpts = prometheus.GaugeOpts{
-		Name: "probe_ip_protocol",
-		Help: "Specifies whether probe ip protocol is IP4 or IP6",
+	ProbeIPProtocolGaugeSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_ip_protocol", Help: "Specifies whether probe ip protocol is IP4 or IP6"},
+		Prober: "all",
 	}
-	probeIPAddrHashOpts = prometheus.GaugeOpts{
-		Name: "probe_ip_addr_hash",
-		Help: "Specifies the hash of IP address. It's useful to detect if the IP address changes.",
+	ProbeIPAddrHashSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_ip_addr_hash", Help: "Specifies the hash of IP address. It's useful to detect if the IP address changes."},
+		Prober: "all",
 	}
 )
-
-func init() {
-	registerMetricDef(MetricDef{
-		Name:   probeDNSLookupTimeSecondsOpts.Name,
-		Type:   "gauge",
-		Prober: "dns, grpc, http, icmp, tcp, unix, websocket",
-		Help:   probeDNSLookupTimeSecondsOpts.Help,
-	})
-	registerMetricDef(MetricDef{
-		Name:   probeIPProtocolGaugeOpts.Name,
-		Type:   "gauge",
-		Prober: "all",
-		Help:   probeIPProtocolGaugeOpts.Help,
-	})
-	registerMetricDef(MetricDef{
-		Name:   probeIPAddrHashOpts.Name,
-		Type:   "gauge",
-		Prober: "all",
-		Help:   probeIPAddrHashOpts.Help,
-	})
-}

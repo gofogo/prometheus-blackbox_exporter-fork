@@ -16,43 +16,22 @@ package prober
 import "github.com/prometheus/client_golang/prometheus"
 
 var (
-	// probeFailedDueToRegexOpts is shared by http.go and query_response.go
+	// ProbeFailedDueToRegexSpec is shared by http.go and query_response.go
 	// (used by ProbeTCP and ProbeUnix).
-	probeFailedDueToRegexOpts = prometheus.GaugeOpts{
-		Name: "probe_failed_due_to_regex",
-		Help: "Indicates if probe failed due to regex",
+	ProbeFailedDueToRegexSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_failed_due_to_regex", Help: "Indicates if probe failed due to regex"},
+		Prober: "http, tcp, unix",
 	}
-	probeFailedDueToBytesOpts = prometheus.GaugeOpts{
-		Name: "probe_failed_due_to_bytes",
-		Help: "Indicates if probe failed due to bytes",
+	ProbeFailedDueToBytesSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_failed_due_to_bytes", Help: "Indicates if probe failed due to bytes"},
+		Prober: "tcp, unix",
 	}
-	probeExpectInfoOpts = prometheus.GaugeOpts{
-		Name: "probe_expect_info",
-		Help: "Explicit content matched",
+	// ProbeExpectInfoSpec uses dynamic (user-defined) labels at runtime.
+	// Labels here is a documentation-only placeholder; production code calls
+	// prometheus.NewGaugeVec(ProbeExpectInfoSpec.Opts, dynamicNames) directly.
+	ProbeExpectInfoSpec = MetricSpec{
+		Opts:   prometheus.GaugeOpts{Name: "probe_expect_info", Help: "Explicit content matched"},
+		Labels: []string{"<user-defined>"},
+		Prober: "tcp, unix",
 	}
 )
-
-func init() {
-	registerMetricDef(MetricDef{
-		Name:   probeFailedDueToRegexOpts.Name,
-		Type:   "gauge",
-		Prober: "http, tcp, unix",
-		Help:   probeFailedDueToRegexOpts.Help,
-	})
-	// probe_failed_due_to_bytes is registered when a query-response step is configured.
-	registerMetricDef(MetricDef{
-		Name:   probeFailedDueToBytesOpts.Name,
-		Type:   "gauge",
-		Prober: "tcp, unix",
-		Help:   probeFailedDueToBytesOpts.Help,
-	})
-	// probe_expect_info is registered when a query-response entry has labels
-	// configured. Its label names are user-defined in the module config.
-	registerMetricDef(MetricDef{
-		Name:   probeExpectInfoOpts.Name,
-		Type:   "gaugevec",
-		Prober: "tcp, unix",
-		Labels: []string{"<user-defined>"},
-		Help:   probeExpectInfoOpts.Help,
-	})
-}

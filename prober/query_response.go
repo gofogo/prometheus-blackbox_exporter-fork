@@ -35,18 +35,18 @@ func probeExpectInfo(registry *prometheus.Registry, qr *config.QueryResponse, by
 		names = append(names, s.Name)
 		values = append(values, string(qr.Expect.Expand(nil, []byte(s.Value), bytes, match)))
 	}
-	metric := prometheus.NewGaugeVec(probeExpectInfoOpts, names)
+	metric := prometheus.NewGaugeVec(ProbeExpectInfoSpec.Opts, names)
 	registry.MustRegister(metric)
 	metric.WithLabelValues(values...).Set(1)
 }
 
 func probeQueryResponses(ctx context.Context, target string, conn net.Conn, module config.Module, proberName string, registry *prometheus.Registry, logger *slog.Logger) bool {
-	probeSSLEarliestCertExpiry := prometheus.NewGauge(sslEarliestCertExpiryGaugeOpts)
-	probeSSLLastChainExpiryTimestampSeconds := prometheus.NewGauge(sslChainExpiryInTimeStampGaugeOpts)
-	probeSSLLastInformation := prometheus.NewGaugeVec(probeSSLLastChainInfoOpts, []string{"fingerprint_sha256", "subject", "issuer", "subjectalternative", "serialnumber"})
-	probeTLSVersion := prometheus.NewGaugeVec(probeTLSInfoGaugeOpts, []string{"version"})
-	probeFailedDueToRegex := prometheus.NewGauge(probeFailedDueToRegexOpts)
-	probeFailedDueToBytes := prometheus.NewGauge(probeFailedDueToBytesOpts)
+	probeSSLEarliestCertExpiry := SSLEarliestCertExpiryGaugeSpec.NewGauge()
+	probeSSLLastChainExpiryTimestampSeconds := SSLChainExpiryInTimeStampGaugeSpec.NewGauge()
+	probeSSLLastInformation := ProbeSSLLastChainInfoSpec.NewGaugeVec()
+	probeTLSVersion := ProbeTLSInfoGaugeSpec.NewGaugeVec()
+	probeFailedDueToRegex := ProbeFailedDueToRegexSpec.NewGauge()
+	probeFailedDueToBytes := ProbeFailedDueToBytesSpec.NewGauge()
 	registry.MustRegister(probeFailedDueToRegex)
 	registry.MustRegister(probeFailedDueToBytes)
 

@@ -76,8 +76,8 @@ func Handler(w http.ResponseWriter, r *http.Request, c *config.Config, logger *s
 	defer cancel()
 	r = r.WithContext(ctx)
 
-	probeSuccessGauge := prometheus.NewGauge(probeSuccessGaugeOpts)
-	probeDurationGauge := prometheus.NewGauge(probeDurationGaugeOpts)
+	probeSuccessGauge := ProbeSuccessGaugeSpec.NewGauge()
+	probeDurationGauge := ProbeDurationGaugeSpec.NewGauge()
 
 	target := params.Get("target")
 	if target == "" {
